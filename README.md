@@ -63,7 +63,9 @@ pip list
 ![](assets/piplist.png)
 
 **Run localhost Django Web server**<br>
-`python manage.py runserver`
+```
+python manage.py runserver
+```
 ![](assets/djangoserver.png)
 
 ## Django structure
