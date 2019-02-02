@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ACCOUNT INFO</title>
+    <style>
+        img {
+          width: 30%;
+        }
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+         }
+
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Account detail</h1>
+    {% for user in list_detail %}
+        <h2>Welcome {{ user.user.username }}!</h2>
+        <table>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Last Login</th>
+            <th>Date Joined</th>
+        </tr>
+        <tr>
+            <td>{{user.user.first_name}}</td>
+            <td>{{user.user.last_name}}</td>
+            <td>{{user.user.email}}</td>
+            <td>{{user.user.last_login}}</td>
+            <td>{{user.user.date_joined}}</td>
+        </tr>
+        </table>
+        <img src="{{ user.image_url.url }}" alt="">
+    {% endfor %}
+    <br>
+    <input type ="button" onclick="history.back()" value="回到上一頁"></input>
+</body>
+</html>

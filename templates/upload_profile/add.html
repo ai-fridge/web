@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register for Smart refrigerator<</title>
+</head>
+<body>
+    <h1>Start your Smart refrigerator</h1>
+    <form action="/upload_profile/add/" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        <label for="name">name:</label>
+        <input type="text" name="name"><br><br>
+
+        <label for="first_name">first_name:</label>
+        <input type="text" name="first_name"><br><br>
+
+        <label for="last_name">last_name:</label>
+        <input type="text" name="last_name"><br><br>
+
+        <label for="email">email:</label>
+        <input type="text" name="email"><br><br>
+
+        <label for="password">password:</label>
+        <input type="text" name="password"><br><br>
+
+        <label for="locale">locale:</label>
+        <input type="text" name="locale"><br><br>
+
+        <label for="image">image:</label><br>
+        <input type="file" name="image"><br><br>
+
+
+        <input type="submit" value="提交">
+
+    </form>
+</body>
+</html>
