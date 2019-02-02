@@ -1,5 +1,5 @@
 # Web with Django
-##Installation
+## Installation
 >**[Pipenv](https://github.com/pypa/pipenv)** is a tool that aims to bring the best of all packaging worlds to the 
 Python world.It automatically creates and manages a virtualenv for your projects, as well as adds/removes packages 
 from your Pipfile as you install/uninstall packages.
@@ -45,7 +45,7 @@ After installing all packages, you can synchronize with the developing environme
 cd web 
 pipenv install
 ```
-##Usage
+## Usage
 **Modify config file dev.env**
 
 One of the features of Pipenv is to automatically load .env files, if they exist. In this project, we setup 
@@ -66,5 +66,5 @@ pip list
 `python manage.py runserver`
 ![](assets/djangoserver.png)
 
-##Django structure
+## Django structure
 
