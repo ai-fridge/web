@@ -3,6 +3,7 @@ from jsonfield import JSONField
 from django.template.defaultfilters import slugify
 from .face_encoding import FaceEncoding
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # Create your models here.
 
@@ -46,5 +47,34 @@ class Recipe(models.Model):
     def __str__(self):
         return self.id+'_'+self.name
 
+class Food_Category(models.Model):
+    id=models.BigIntegerField(primary_key=True)
+    food_name=models.CharField(max_length=200)
+    created_at = models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField(editable=False)
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
+        return super(Food_Category, self).save(*args, **kwargs)
+    def __str__(self):
+        return self.food_name
 
-
+class Member_Fridge(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    food_category=models.ForeignKey(Food_Category,on_delete=models.CASCADE)
+    food_qty=models.IntegerField()
+    fridge_img_url=models.CharField(max_length=120)
+    fridge_predict_img_url = models.CharField(max_length=120)
+    created_at = models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField(editable=False)
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
+        return super(Member_Fridge, self).save(*args, **kwargs)
+    def __str__(self):
+        return self.user

@@ -27,5 +27,6 @@ urlpatterns = [
     path('special/', views.special, name='special'),
     path('api/', include('api.urls')),
     path('logout/', views.user_logout, name='logout'),
-    path('detail/',views.detail,name='detail')
+    path('detail/',views.detail,name='detail'),
+    path('My Fridge/',views.My_Fridge,name='My_Fridge')
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
