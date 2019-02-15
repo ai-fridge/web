@@ -1,0 +1,15 @@
+django
+djangorestframework
+uwsgi
+mysqlclient
+celery
+redis
+python-dotenv
+jsonfield
+numpy
+pillow
+face-recognition
+setuptools
+pip
+pytz
+wheel
