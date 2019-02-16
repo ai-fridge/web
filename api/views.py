@@ -1,3 +1,5 @@
+import os
+import uuid
 from django.shortcuts import render
 from api.forms import UserForm,UserProfileInfoForm
 from django.contrib.auth import authenticate, login, logout
@@ -7,6 +9,9 @@ from django.contrib.auth.decorators import login_required
 from api.models import Member,Food_Category,Member_Fridge
 from django.core import serializers
 from django.http import JsonResponse
+from core.image import (convert_and_save, create_dir_folder, get_base64,
+                          is_base64_image)
+from .face_encoding import FaceEncoding
 
 def index(request):
     return render(request,'api/index.html')
@@ -80,3 +85,23 @@ def My_Fridge(request):
                                    "food_qty":item.food_qty,"created_at":item.created_at,"updated_at":item.updated_at})
     jsondata['food']=food_list
     return JsonResponse(jsondata)
+
+
+def verify_face_recognition(request):
+    if request.method == 'POST':
+        data = request.data
+
+        if is_base64_image(data['file']):
+            b64_string = get_base64(data['file'])
+        else:
+            return JsonResponse({"error": "base64 image format is not correct"})
+
+        dirname = 'upload/face_recognition/'
+        filename = str(uuid.uuid1()) + '.jpg'
+
+        if not os.path.exists(dirname):
+            create_dir_folder(dirname)
+
+        #TODO::integrate with mysql
+        return JsonResponse({'name': 1})
+
