@@ -10,7 +10,7 @@ def convert_and_save(b64_string, dirname, filename):
     if dirname is None:
         dirname = 'upload/tmp/'
 
-    image_name = dirname + filename
+    image_name = dirname + filename+".jpg"
     with open(image_name, "wb") as fh:
         fh.write(base64.decodebytes(b64_string.encode()))
         return image_name
@@ -35,5 +35,5 @@ def is_base64_image(base64_string):
     return True
 
 
-def get_base64(base64_string):
-    return re.sub('^data:image/.+;base64,', '', base64_string)
+def getBase64Str(base64_string):
+        return re.sub('^data:image/.+;base64,', '', base64_string)

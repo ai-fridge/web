@@ -14,6 +14,10 @@ jsonfield = "*"
 numpy = "*"
 pillow = "*"
 face-recognition = "*"
+opencv-python = "*"
+scipy = "*"
+keras = "*"
+tensorflow = "*"
 
 [requires]
 python_version = "3.6"

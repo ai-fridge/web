@@ -62,7 +62,7 @@ class Food_Category(models.Model):
         return self.food_name
 
 class Member_Fridge(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     food_category=models.ForeignKey(Food_Category,on_delete=models.CASCADE)
     food_qty=models.IntegerField()
