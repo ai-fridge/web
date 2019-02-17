@@ -1,6 +1,7 @@
 import os
 import uuid
 import json
+import numpy as np
 from django.shortcuts import render
 from api.forms import UserForm,UserProfileInfoForm
 from django.contrib.auth import authenticate, login, logout
@@ -11,11 +12,8 @@ from api.models import Member,Food_Category,Member_Fridge
 from django.http import JsonResponse
 from core.image import (convert_and_save, create_dir_folder, getBase64Str,
                           is_base64_image)
-
-from .face_encoding import FaceEncoding
 from .predict import _main_
 from django.views.decorators.csrf import csrf_exempt
-import numpy as np
 import ast
 from django.contrib.auth.models import User
 from django.utils import timezone
