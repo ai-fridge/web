@@ -13,3 +13,4 @@ setuptools
 pip
 pytz
 wheel
+django-cors-headers
