@@ -1,5 +1,7 @@
 import os
 import uuid
+import json
+import numpy as np
 from django.shortcuts import render
 from api.forms import UserForm,UserProfileInfoForm
 from django.contrib.auth import authenticate, login, logout
@@ -11,7 +13,10 @@ from django.core import serializers
 from django.http import JsonResponse
 from core.image import (convert_and_save, create_dir_folder, get_base64,
                           is_base64_image)
-from .face_encoding import FaceEncoding
+from .face_encoding import detect_faces_in_image
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 def index(request):
     return render(request,'api/index.html')
@@ -87,6 +92,7 @@ def My_Fridge(request):
     return JsonResponse(jsondata)
 
 
+@api_view(['POST'])
 def verify_face_recognition(request):
     if request.method == 'POST':
         data = request.data
@@ -94,14 +100,24 @@ def verify_face_recognition(request):
         if is_base64_image(data['file']):
             b64_string = get_base64(data['file'])
         else:
-            return JsonResponse({"error": "base64 image format is not correct"})
+            return Response({"error": "base64 image format is not correct"}, status=status.HTTP_400_BAD_REQUEST)
 
-        dirname = 'upload/face_recognition/'
+        dirname = 'media/face_recognition/'
         filename = str(uuid.uuid1()) + '.jpg'
 
         if not os.path.exists(dirname):
             create_dir_folder(dirname)
 
-        #TODO::integrate with mysql
-        return JsonResponse({'name': 1})
+        # Get face encodings for any faces in the uploaded image
+        unknown_face_img = convert_and_save(b64_string, dirname, filename)
 
+        known_faces = Member.objects.values_list('avatar_encoding', flat=True)
+        known_face_names = Member.objects.values_list('slug', flat=True)
+        known_face_encoding = []
+
+        for known_face in known_faces:
+            known_face_encoding.append(np.array(json.loads(known_face)))
+
+        result = detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names)
+
+        return Response(result)
