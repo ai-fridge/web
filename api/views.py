@@ -113,11 +113,12 @@ def verify_face_recognition(request):
 
         known_faces = Member.objects.values_list('avatar_encoding', flat=True)
         known_face_names = Member.objects.values_list('slug', flat=True)
+        user_ids = Member.objects.values_list('user_id', flat=True)
         known_face_encoding = []
 
         for known_face in known_faces:
             known_face_encoding.append(np.array(json.loads(known_face)))
 
-        result = detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names)
+        result = detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names, user_ids)
 
         return Response(result)

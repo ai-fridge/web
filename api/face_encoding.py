@@ -8,7 +8,7 @@ def FaceEncoding(path):
 
 # a=FaceEncoding("../media/image/1.jpg")
 # print(a)
-def detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names):
+def detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names, user_ids):
     face_found = False
     is_face_authentication = False
     name = 'Unknown'
@@ -23,13 +23,15 @@ def detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_name
         if True in matches:
             is_face_authentication = True
             first_match_index = matches.index(True)
+            user_id = user_ids[first_match_index]
             name = known_face_names[first_match_index]
 
     # Return the result as json
     result = {
         "isFaceFound": face_found,
         "isFaceAuthentication": is_face_authentication,
-        "name": name
+        "name": name,
+        "user_id": user_id
     }
 
     return result
