@@ -48,7 +48,7 @@ class Recipe(models.Model):
         return self.id+'_'+self.name
 
 class Food_Category(models.Model):
-    id=models.BigIntegerField(primary_key=True)
+    id=models.BigAutoField(primary_key=True)
     food_name=models.CharField(max_length=200)
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField(editable=False)

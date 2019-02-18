@@ -2,7 +2,7 @@
 {
     "model" : {
         "anchors":              [17,50, 58,106, 100,313, 112,144, 146,197, 176,282, 232,198, 242,350, 354,352],
-        "labels":               ["cabbage","guave","milk"]
+        "labels":               ["cabbage","guava","milk"]
     },
 
     "train": {

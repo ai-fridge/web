@@ -1,6 +1,7 @@
 import os
 import uuid
 import json
+import numpy as np
 from django.shortcuts import render
 from api.forms import UserForm,UserProfileInfoForm
 from django.contrib.auth import authenticate, login, logout
@@ -12,11 +13,9 @@ from django.http import JsonResponse
 from core.image import (convert_and_save, create_dir_folder, getBase64Str,
                           is_base64_image)
 
-from .face_encoding import FaceEncoding
-from .predict import _main_
+from yolo.predict import _main_
 from django.views.decorators.csrf import csrf_exempt
 import numpy as np
-import ast
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.conf import settings
@@ -26,8 +25,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 ####set up parameter####
 media_root=settings.MEDIA_ROOT
-ori_dirname=media_root+'/base64/'
 config_path=settings.BASE_DIR+'/config.json'
+ori_dirname=media_root+'/base64/'
 yolo_output_path=media_root+'/yolo/'
 ########################
 
@@ -118,7 +117,7 @@ def verify_face_recognition(request):
             return Response({"error": "base64 image format is not correct"}, status=status.HTTP_400_BAD_REQUEST)
 
         dirname = 'media/face_recognition/'
-        filename = str(uuid.uuid1()) + '.jpg'
+        filename = str(uuid.uuid1())
 
         if not os.path.exists(dirname):
             create_dir_folder(dirname)
@@ -128,23 +127,25 @@ def verify_face_recognition(request):
 
         known_faces = Member.objects.values_list('avatar_encoding', flat=True)
         known_face_names = Member.objects.values_list('slug', flat=True)
+        user_ids = Member.objects.values_list('user_id', flat=True)
         known_face_encoding = []
 
         for known_face in known_faces:
             known_face_encoding.append(np.array(json.loads(known_face)))
 
-        result = detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names)
+        result = detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names, user_ids)
 
         return Response(result)
 
 
-@csrf_exempt
+@api_view(['POST'])
 def Object_Detection(request):
     if request.method == "POST":
+        data = request.data
 
-        id =int(request.POST.get('user_id'))
+        id = int(data['user_id'])
         #save origin base64 and predicted image
-        file=request.POST.get('file')
+        file = data['file']
         if is_base64_image(file):
             b64_string = getBase64Str(file)
         else:
@@ -156,14 +157,66 @@ def Object_Detection(request):
         img_ori = convert_and_save(b64_string,ori_dirname, username)
 
         label_result, fridge_predict_img_url= _main_(config_path=config_path,input_path=img_ori,output_path=yolo_output_path)
+
+        # calculate total inventory of in DB
+        inventory = Member_Fridge.objects.all()
+        inventories = {}
+        for invent in inventory:
+            # print(invent.food_category,type(invent.food_category),invent.food_category.id,type(invent.food_category.id))
+            food_name = str(invent.food_category)
+            if food_name not in inventories.keys():
+                inventories[food_name] = int(invent.food_qty)
+            else:
+                inventories[food_name] += int(invent.food_qty)
+
+        # calculate difference between inventories and label_result
+        # part1: calculate food "vanished"
+        diff={}
+        for k in inventories.keys():
+            if k not in label_result.keys():
+                diff[k]=-1*int(inventories[k])
+        #         food_category = Food_Category.objects.get(food_name=k)
+        #         Member_Fridge.objects.filter(food_category=food_category,user=id).delete()
+        #
+        # part2: calculate diff of food still "existed"
         for k in label_result.keys():
-            food_qty=label_result[k]
-            food_category=Food_Category.objects.get(food_name=k)
-            user_id = User.objects.get(id=id)
-            mf = Member_Fridge(user=user_id,food_category=food_category,food_qty=food_qty,fridge_img_url=img_ori,fridge_predict_img_url=fridge_predict_img_url,created_at=timezone.now())
-            mf.save()
+            if k in inventories.keys():
+                diff[k]=label_result[k]-inventories[k]
+            else:
+                diff[k]=label_result[k]
+        # calculate updated inventory of in DB under corresponding "id"
+        p_inventory = Member_Fridge.objects.filter(user=id)
+        p_inventories = {}
+        for invent in p_inventory:
+            food_name = str(invent.food_category)
+            if food_name not in p_inventories.keys():
+                p_inventories[food_name] = int(invent.food_qty)
+            else:
+                p_inventories[food_name] += int(invent.food_qty)
 
+        p_updates={}
+        for k in diff.keys():
+            if k in p_inventories.keys():
+                p_updates[k]=diff[k]+p_inventories[k]
+            else:
+                p_updates[k]=diff[k]
 
+        # update new inventory into db_Member_Fridge of under corresponding "id"
+        for k in p_updates.keys():
+            if k in p_inventories.keys():
+                food_qty = int(p_updates[k])
+                food_category = Food_Category.objects.get(food_name=k)
+                user_id = User.objects.get(id=id)
+                Member_Fridge_instance = Member_Fridge.objects.get(user=user_id, food_category=food_category)
+                Member_Fridge_instance.food_qty = food_qty
+                Member_Fridge_instance.save()
+            else:
+                food_qty = int(p_updates[k])
+                food_category = Food_Category.objects.get(food_name=k)
+                user_id = User.objects.get(id=id)
+                mf = Member_Fridge(user=user_id, food_category=food_category, food_qty=food_qty, fridge_img_url=img_ori,
+                                   fridge_predict_img_url=fridge_predict_img_url, created_at=timezone.now())
+                mf.save()
         #response to IOT
         data = Member_Fridge.objects.filter(user=id)  # .values('food_qty')
         jsondata = {}
@@ -175,6 +228,6 @@ def Object_Detection(request):
         for item in data:
             food_list.append({"id": item.food_category.id, "food_name": item.food_category.food_name,
                               "food_qty": item.food_qty, "created_at": item.created_at, "updated_at": item.updated_at})
-        jsondata['food'] = food_list
+        jsondata['foods'] = food_list
         return JsonResponse(jsondata)
     return HttpResponse("It's not POST!!")
