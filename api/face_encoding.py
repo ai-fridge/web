@@ -12,7 +12,10 @@ def detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_name
     face_found = False
     is_face_authentication = False
     name = 'Unknown'
-    unknown_face_encodings = FaceEncoding(unknown_face_img)
+    user_id = 0
+
+    unknown_face_img = face_recognition.load_image_file(unknown_face_img)
+    unknown_face_encodings = face_recognition.face_encodings(unknown_face_img)[0]
 
     if len(unknown_face_encodings) > 0:
         face_found = True

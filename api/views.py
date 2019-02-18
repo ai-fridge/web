@@ -116,7 +116,7 @@ def verify_face_recognition(request):
             return Response({"error": "base64 image format is not correct"}, status=status.HTTP_400_BAD_REQUEST)
 
         dirname = 'media/face_recognition/'
-        filename = str(uuid.uuid1()) + '.jpg'
+        filename = str(uuid.uuid1())
 
         if not os.path.exists(dirname):
             create_dir_folder(dirname)
