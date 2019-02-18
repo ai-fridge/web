@@ -28,6 +28,5 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('logout/', views.user_logout, name='logout'),
     path('detail/',views.detail,name='detail'),
-    path('My Fridge/',views.My_Fridge,name='My_Fridge'),
-    path('yolo_api',views.Object_Detection,name="Object_Detection")
+    path('My Fridge/',views.My_Fridge,name='My_Fridge')
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
