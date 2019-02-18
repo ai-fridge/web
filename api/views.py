@@ -126,23 +126,25 @@ def verify_face_recognition(request):
 
         known_faces = Member.objects.values_list('avatar_encoding', flat=True)
         known_face_names = Member.objects.values_list('slug', flat=True)
+        user_ids = Member.objects.values_list('user_id', flat=True)
         known_face_encoding = []
 
         for known_face in known_faces:
             known_face_encoding.append(np.array(json.loads(known_face)))
 
-        result = detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names)
+        result = detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names, user_ids)
 
         return Response(result)
 
 
-@csrf_exempt
+@api_view(['POST'])
 def Object_Detection(request):
     if request.method == "POST":
+        data = request.data
 
-        id =int(request.POST.get('user_id'))
+        id = int(data['user_id'])
         #save origin base64 and predicted image
-        file=request.POST.get('file')
+        file = data['file']
         if is_base64_image(file):
             b64_string = getBase64Str(file)
         else:
@@ -173,6 +175,6 @@ def Object_Detection(request):
         for item in data:
             food_list.append({"id": item.food_category.id, "food_name": item.food_category.food_name,
                               "food_qty": item.food_qty, "created_at": item.created_at, "updated_at": item.updated_at})
-        jsondata['food'] = food_list
+        jsondata['foods'] = food_list
         return JsonResponse(jsondata)
     return HttpResponse("It's not POST!!")
