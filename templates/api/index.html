@@ -1,13 +1,28 @@
 {% extends "api/base.html" %}
 {% block body_block %}
-<div class="container">
-  <div class="jumbotron">
-    <h1>Start your Smart Refrigerator!</h1>
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">IFridge</h1>
+    <p class="lead">Start your Smart Refrigerator!</p>
+  </div>
+</div>
+
+<div class="container mb-5">
     {% if user.is_authenticated %}
         <h2>Hello {{ user.username }}</h2>
+        <p>
+            Check out your food now.
+            <a class="btn btn-warning btn-xm" href="{% url 'My_Fridge' %}">My fridge</a>
+        </p>
     {% else %}
-        <h2>Please Register or Login</h2>
+    <p class="mb-5">
+        <a class="btn btn-warning btn-lg btn-block" href="{% url 'api:user_login' %}">Log in</a>
+    </p>
+    <p>
+        Don't have an account?
+        <a class="btn btn-outline-warning btn-lg btn-block" href="{% url 'api:register' %}">Sign up</a>
+    </p>
     {% endif %}
-  </div>
 </div>
 {% endblock %}
