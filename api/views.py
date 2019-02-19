@@ -12,9 +12,10 @@ from api.models import Member,Food_Category,Member_Fridge
 from django.http import JsonResponse
 from core.image import (convert_and_save, create_dir_folder, getBase64Str,
                           is_base64_image)
-from .predict import _main_
+
+from yolo.predict import _main_
 from django.views.decorators.csrf import csrf_exempt
-import ast
+import numpy as np
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.conf import settings
@@ -24,8 +25,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 ####set up parameter####
 media_root=settings.MEDIA_ROOT
-ori_dirname=media_root+'/base64/'
 config_path=settings.BASE_DIR+'/config.json'
+ori_dirname=media_root+'/base64/'
 yolo_output_path=media_root+'/yolo/'
 ########################
 
@@ -156,14 +157,66 @@ def Object_Detection(request):
         img_ori = convert_and_save(b64_string,ori_dirname, username)
 
         label_result, fridge_predict_img_url= _main_(config_path=config_path,input_path=img_ori,output_path=yolo_output_path)
+
+        # calculate total inventory of in DB
+        inventory = Member_Fridge.objects.all()
+        inventories = {}
+        for invent in inventory:
+            # print(invent.food_category,type(invent.food_category),invent.food_category.id,type(invent.food_category.id))
+            food_name = str(invent.food_category)
+            if food_name not in inventories.keys():
+                inventories[food_name] = int(invent.food_qty)
+            else:
+                inventories[food_name] += int(invent.food_qty)
+
+        # calculate difference between inventories and label_result
+        # part1: calculate food "vanished"
+        diff={}
+        for k in inventories.keys():
+            if k not in label_result.keys():
+                diff[k]=-1*int(inventories[k])
+        #         food_category = Food_Category.objects.get(food_name=k)
+        #         Member_Fridge.objects.filter(food_category=food_category,user=id).delete()
+        #
+        # part2: calculate diff of food still "existed"
         for k in label_result.keys():
-            food_qty=label_result[k]
-            food_category=Food_Category.objects.get(food_name=k)
-            user_id = User.objects.get(id=id)
-            mf = Member_Fridge(user=user_id,food_category=food_category,food_qty=food_qty,fridge_img_url=img_ori,fridge_predict_img_url=fridge_predict_img_url,created_at=timezone.now())
-            mf.save()
+            if k in inventories.keys():
+                diff[k]=label_result[k]-inventories[k]
+            else:
+                diff[k]=label_result[k]
+        # calculate updated inventory of in DB under corresponding "id"
+        p_inventory = Member_Fridge.objects.filter(user=id)
+        p_inventories = {}
+        for invent in p_inventory:
+            food_name = str(invent.food_category)
+            if food_name not in p_inventories.keys():
+                p_inventories[food_name] = int(invent.food_qty)
+            else:
+                p_inventories[food_name] += int(invent.food_qty)
 
+        p_updates={}
+        for k in diff.keys():
+            if k in p_inventories.keys():
+                p_updates[k]=diff[k]+p_inventories[k]
+            else:
+                p_updates[k]=diff[k]
 
+        # update new inventory into db_Member_Fridge of under corresponding "id"
+        for k in p_updates.keys():
+            if k in p_inventories.keys():
+                food_qty = int(p_updates[k])
+                food_category = Food_Category.objects.get(food_name=k)
+                user_id = User.objects.get(id=id)
+                Member_Fridge_instance = Member_Fridge.objects.get(user=user_id, food_category=food_category)
+                Member_Fridge_instance.food_qty = food_qty
+                Member_Fridge_instance.save()
+            else:
+                food_qty = int(p_updates[k])
+                food_category = Food_Category.objects.get(food_name=k)
+                user_id = User.objects.get(id=id)
+                mf = Member_Fridge(user=user_id, food_category=food_category, food_qty=food_qty, fridge_img_url=img_ori,
+                                   fridge_predict_img_url=fridge_predict_img_url, created_at=timezone.now())
+                mf.save()
         #response to IOT
         data = Member_Fridge.objects.filter(user=id)  # .values('food_qty')
         jsondata = {}

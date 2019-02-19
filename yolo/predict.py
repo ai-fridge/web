@@ -4,16 +4,20 @@ import cv2
 from utils.utils import get_yolo_boxes, makedirs
 from utils.bbox import draw_boxes
 from keras.models import load_model
-# from tqdm import tqdm
 import numpy as np
 from django.conf import settings
 
-# infer_model = 'Hi'
 
-# def init_model():
-#     infer_model = load_model('a.h5')
+# infer_model = None
+#
+#
+#
+# def init_model(config_path):
+#     with open(config_path) as config_buffer:
+#         config = json.load(config_buffer)
+#     infer_model = load_model(settings.BASE_DIR+config['train']['saved_weights_name'])
 
-def _main_(config_path, input_path, output_path):
+def _main_(config_path,input_path, output_path):
     with open(config_path) as config_buffer:
         config = json.load(config_buffer)
     makedirs(output_path)
