@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 import os
+from keras.models import load_model
+import tensorflow
 #set up dotenv##################
 from dotenv import load_dotenv
 load_dotenv("./dev.env")
@@ -155,3 +157,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 #login url
 LOGIN_URL='/api/user_login/'
+
+#load yolo model
+WEIGHT_DIR=os.path.join(BASE_DIR,'cabbage_guava_milk.h5')
+INFER_MODEL = load_model(WEIGHT_DIR)
+GRAPH = tensorflow.get_default_graph()
