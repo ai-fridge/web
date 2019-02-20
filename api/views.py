@@ -90,20 +90,24 @@ def detail(request):
     context ={"list_detail":list_detail}
     return render(request, 'upload_profile/detail.html', context)
 
+@login_required()
+def my_account(request):
+    account = Member.objects.filter(user_id=request.user.id).first()
+    context = {"account": account}
+    return render(request, 'my_account.html', context)
 
 @login_required()
 def My_Fridge(request):
     data = Member_Fridge.objects.filter(user=request.user.id)#.values('food_qty')
     jsondata ={}
-    #user info
-    jsondata['user']={"id":request.user.id,"name":request.user.username}
-    #food info
     food_list = []
+
     for item in data:
         food_list.append({"id":item.food_category.id,"food_name":item.food_category.food_name,
+                          "fridge_predict_img_url": item.fridge_predict_img_url,
                                    "food_qty":item.food_qty,"created_at":item.created_at,"updated_at":item.updated_at})
-    jsondata['food']=food_list
-    return JsonResponse(jsondata)
+    jsondata['foods']=food_list
+    return render(request, 'fridge.html', jsondata)
 
 
 @api_view(['POST'])

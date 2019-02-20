@@ -1,0 +1,29 @@
+{% extends "api/base.html" %}
+{% block body_block %}
+{% load humanize %}
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">My Fridge</h1>
+    <p class="lead">Never forget about your leftovers again!</p>
+  </div>
+</div>
+
+<div class="container mb-5">
+    <h2>Inventory</h2>
+    <div class="card-deck">
+      {% for food in foods %}
+      <div class="card">
+        <img src={{ food.fridge_predict_img_url }} class="card-img-top">
+        <div class="card-body">
+          <h5 class="card-title">{{ food.food_name }}</h5>
+          <p class="card-text">qty: {{ food.food_qty }}</p>
+          <p class="card-text"><small class="text-muted">{{ food.updated_at|naturaltime }}</small></p>
+        </div>
+      </div>
+      {% empty %}
+        <p>You have no foods in your fridge. Shopping for Food now!</p>
+      {% endfor %}
+    </div>
+</div>
+{% endblock %}
