@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'corsheaders',
+    'django.contrib.humanize',
 ]
 
 
@@ -124,8 +125,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 CORS_ORIGIN_WHITELIST = (
-    '127.0.0.1:3001',
-    'localhost:3001',
+    '127.0.0.1:3000',
+    'localhost:3000',
 )
 
 
