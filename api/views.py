@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from api.models import Member,Food_Category,Member_Fridge
+from api.models import Member,Food_Category,Member_Fridge,Recipe
 from django.http import JsonResponse
 from core.image import (convert_and_save, create_dir_folder, getBase64Str,
                           is_base64_image)
@@ -109,6 +109,48 @@ def My_Fridge(request):
     jsondata['foods']=food_list
     return render(request, 'fridge.html', jsondata)
 
+@login_required()
+def Recommandation(request):
+    data = Member_Fridge.objects.filter(user=request.user.id)  # .values('food_qty')
+    food_list = []
+    mapping={"milk":"牛奶","guava":"芭樂","cabbage":"高麗菜"}
+    for item in data:
+        food_list.append(mapping[item.food_category.food_name])
+    data_r = Recipe.objects.all()
+    recipe_dict={}
+    for item in data_r:
+        ingred = item.ingredient_table
+        recipe_dict[item.id]=''.join(ingred)
+
+    recommand_id = []
+    for food in food_list:
+        for k,v in recipe_dict.items():
+            if food in v:
+                recommand_id.append(k)
+
+    recommand=[]
+
+    for rid in recommand_id:
+        a=Recipe.objects.filter(pk=rid)
+        for i in a:
+            recommand.append({"id":i.id,"name":json.loads(json.dumps(i.name)),"description":json.loads(json.dumps(i.description))})
+    jsondata={}
+    jsondata['recommand']=recommand
+    return render(request, 'recommand.html', jsondata)
+    # return HttpResponse('shit')
+def Recipe_detail(request,pk):
+    data =Recipe.objects.filter(pk=pk)
+    jsondata = {}
+    recipe_detail = []
+    for item in data:
+        recipe_detail.append({"id":item.id,"name":item.name,
+                              "description": item.description,
+                              "img_url":item.img_url,"cooking_time":item.cooking_time,
+                              "ingredient_table":json.loads(json.dumps(item.ingredient_table)),
+                              "cooking_steps": json.loads(json.dumps(item.cooking_steps))})
+    jsondata['recipe_detail'] = recipe_detail
+    return render(request,'recipe_detail.html',jsondata)
+
 
 @api_view(['POST'])
 def verify_face_recognition(request):
@@ -160,8 +202,8 @@ def Object_Detection(request):
         username = User.objects.get(id=id).username
         img_ori = convert_and_save(b64_string,ori_dirname, username)
 
-        label_result, fridge_predict_img_url= _main_(config_path=config_path,input_path=img_ori,output_path=yolo_output_path)
-
+        label_result, fridge_predict_img_url,waste= _main_(config_path=config_path,input_path=img_ori,output_path=yolo_output_path)
+        print(waste)
         # calculate total inventory of in DB
         inventory = Member_Fridge.objects.all()
         inventories = {}
