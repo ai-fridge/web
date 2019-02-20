@@ -4,7 +4,7 @@ from django.template.defaultfilters import slugify
 from .face_encoding import FaceEncoding
 from django.contrib.auth.models import User
 from django.utils import timezone
-
+import json
 # Create your models here.
 
 #upload folder
@@ -45,7 +45,7 @@ class Recipe(models.Model):
     ingredient_table=JSONField(null=True)
     cooking_steps=JSONField(null=True)
     def __str__(self):
-        return self.id+'_'+self.name
+        return self.name
 
 class Food_Category(models.Model):
     id=models.BigAutoField(primary_key=True)
