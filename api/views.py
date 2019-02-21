@@ -127,7 +127,7 @@ def Recommandation(request):
         for k,v in recipe_dict.items():
             if food in v:
                 recommand_id.append(k)
-
+    recommand_id=list(set(recommand_id))
     recommand=[]
 
     for rid in recommand_id:
