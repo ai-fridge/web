@@ -26,7 +26,7 @@
           <!--<li class="nav-item">-->
             <!--<a class="nav-link" href="{% url 'admin:index' %}">Admin</a>-->
           <!--</li>-->
-            {# Some logic on what to display for last item#}
+          {# Some logic on what to display for last item#}
           {% if user.is_authenticated %}
             <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'my_account' %}">My Account</a></li>
