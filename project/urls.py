@@ -28,5 +28,8 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('logout/', views.user_logout, name='logout'),
     path('detail/',views.detail,name='detail'),
-    path('My Fridge/',views.My_Fridge,name='My_Fridge')
+    path('my_account/',views.my_account,name='my_account'),
+    path('my_fridge/',views.My_Fridge,name='My_Fridge'),
+    path('recipe_detail/<int:pk>/',views.Recipe_detail,name="recipe_detail"),
+    path('recommandation/',views.Recommandation,name='recommandation')
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

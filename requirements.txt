@@ -14,3 +14,7 @@ pip
 pytz
 wheel
 django-cors-headers
+opencv-python
+scipy
+keras
+tensorflow
