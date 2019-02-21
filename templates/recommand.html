@@ -1,0 +1,30 @@
+{% extends "api/base.html" %}
+{% block body_block %}
+{% load humanize %}
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Personal Recommendation</h1>
+    <p class="lead">Enjoy Health and Fitness!</p>
+  </div>
+</div>
+
+<div class="container mb-5">
+    <h2>Recommandation</h2>
+    <div class="card-deck">
+      {% for r in recommand %}
+      <div class="card">
+        <!--<img src={{ food.fridge_predict_img_url }} class="card-img-top">-->
+        <div class="card-body">
+          <h5  style="background-color: #FFCC22" class="card-title">{{ r.name }}</h5>
+          <p class="card-text">{{ r.description }}</p>
+          <a href="{% url 'recipe_detail' pk=r.id %}">read more</a>
+          <!--<p class="card-text"><small class="text-muted">{{ food.updated_at|naturaltime }}</small></p>-->
+        </div>
+      </div>
+      {% empty %}
+        <p>You have no foods in your fridge. Shopping for Food now!</p>
+      {% endfor %}
+    </div>
+</div>
+{% endblock %}

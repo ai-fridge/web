@@ -6,7 +6,7 @@ conn = mysql.connector.connect(
     user='root',
     password='dj2133',
     host='localhost',
-    database='smartrefrigerator')
+    database='test_login')
 
 cur = conn.cursor()
 
@@ -40,8 +40,8 @@ conn.close()
 #
 # for k ,v in data.items():
 #     print(k,type(v['name']),type(v['description']),type(v['img_url']),type(v['ingredient_table']))
-# query = ("SELECT ingredient_table,cooking_steps FROM api_recipe")
+# query = ("SELECT id,ingredient_table,cooking_steps FROM api_recipe")
 # cur.execute(query)
 #
-# for ingredient_table,cooking_steps in cur:
-#     print(json.loads(ingredient_table),json.loads(cooking_steps))
+# for id,ingredient_table,cooking_steps in cur:
+#     print(id,type(id),json.loads(ingredient_table),json.loads(cooking_steps))

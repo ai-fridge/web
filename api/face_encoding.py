@@ -12,7 +12,7 @@ def detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_name
     face_found = False
     is_face_authentication = False
     name = 'Unknown'
-    user_id = 0
+    userId = 0
 
     unknown_face_img = face_recognition.load_image_file(unknown_face_img)
     unknown_face_encodings = face_recognition.face_encodings(unknown_face_img)[0]
@@ -26,7 +26,7 @@ def detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_name
         if True in matches:
             is_face_authentication = True
             first_match_index = matches.index(True)
-            user_id = user_ids[first_match_index]
+            userId = user_ids[first_match_index]
             name = known_face_names[first_match_index]
 
     # Return the result as json
@@ -34,7 +34,7 @@ def detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_name
         "isFaceFound": face_found,
         "isFaceAuthentication": is_face_authentication,
         "name": name,
-        "user_id": user_id
+        "userId": userId
     }
 
     return result

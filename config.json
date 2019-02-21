@@ -1,0 +1,13 @@
+
+{
+    "model" : {
+        "anchors":              [17,50, 58,106, 100,313, 112,144, 146,197, 176,282, 232,198, 242,350, 354,352],
+        "labels":               ["cabbage","guava","milk"]
+    },
+
+    "train": {
+        "gpus":                 "",
+        "saved_weights_name":   "/cabbage_guava_milk.h5",
+        "debug":                true
+    }
+}

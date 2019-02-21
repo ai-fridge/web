@@ -1,0 +1,46 @@
+{% extends "api/base.html" %}
+{% block body_block %}
+{% load humanize %}
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Personal Recommendation</h1>
+    <p class="lead">Enjoy Health and Fitness!</p>
+  </div>
+</div>
+
+<div class="container mb-5">
+    <h2>Recipe detail</h2>
+    <div class="card-deck">
+      {% for recipe in recipe_detail %}
+      <div class="card">
+        <img src="/media/{{ recipe.img_url }}" class="card-img-top" width="60%"">
+        <div class="card-body" style="background-color:#FFCC22;">
+
+          <h5 class="card-title">{{ recipe.name }}</h5>
+
+          <p class="card-text">{{ recipe.description }}</p>
+
+          <h5 class="card-title">烹飪時間</h5>
+          <p class="card-text">{{ recipe.cooking_time }}</p>
+
+          <h5 class="card-title">食材</h5>
+            <ul>
+                {% for k,v in recipe.ingredient_table.items %}
+                <li>{{ k }}:{{v}}</li>
+                {% endfor %}
+            </ul>
+
+          <h5 class="card-title">烹飪步驟</h5>
+            {% for k,v in recipe.cooking_steps.items %}
+                <p class="card-text">Step{{ forloop.counter }}:{{ v }}</p>
+            {% endfor %}
+          <!--<p class="card-text"><small class="text-muted">{{ recipe.updated_at|naturaltime }}</small></p>-->
+        </div>
+      </div>
+      <!--{% empty %}-->
+        <!--<p>You have no foods in your fridge. Shopping for Food now!</p>-->
+      {% endfor %}
+    </div>
+</div>
+{% endblock %}
