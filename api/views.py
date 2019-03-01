@@ -203,7 +203,7 @@ def Object_Detection(request):
         img_ori = convert_and_save(b64_string,ori_dirname, username)
 
         label_result, fridge_predict_img_url= _main_(config_path=config_path,input_path=img_ori,output_path=yolo_output_path)
-
+        print(label_result)
         # calculate total inventory of in DB
         inventory = Member_Fridge.objects.all()
         inventories = {}

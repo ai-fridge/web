@@ -14,7 +14,8 @@
     <div class="card-deck">
       {% for food in foods %}
       <div class="card">
-        <img src={{ food.fridge_predict_img_url }} class="card-img-top">
+        <!--<img src={{ food.fridge_predict_img_url }} class="card-img-top">-->
+        <img src="/media/food/{{ food.food_name }}.jpg" class="card-img-top" width="60%">
         <div class="card-body">
           <h5 class="card-title">{{ food.food_name }}</h5>
           <p class="card-text">qty: {{ food.food_qty }}</p>

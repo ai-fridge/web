@@ -19,6 +19,11 @@ scipy = "*"
 keras = "*"
 tensorflow = "*"
 django-cors-headers = "*"
+pandas = "*"
+beautifulsoup4 = "*"
+requests = "*"
+celery = "*"
+django-celery = "*"
 
 [requires]
 python_version = "3.6"
