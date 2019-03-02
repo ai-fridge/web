@@ -32,13 +32,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rhcx=06*t$wxc$ax2@t5r910((u-838yb#rc%_c0c1ryp2#&xz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
-
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,8 +47,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
+    'crawler',
     'corsheaders',
     'django.contrib.humanize',
+    'djcelery',
 ]
 
 
