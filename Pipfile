@@ -25,6 +25,7 @@ requests = "*"
 celery = "*"
 django-celery = "*"
 lxml = "*"
+urllib = "*"
 
 [requires]
 python_version = "3.6"
