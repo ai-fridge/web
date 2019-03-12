@@ -168,16 +168,23 @@ def verify_face_recognition(request):
         if not os.path.exists(dirname):
             create_dir_folder(dirname)
 
+        try:
+            members = Member.objects.values("slug", "user_id", "avatar_encoding")
+        except Member.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         # Get face encodings for any faces in the uploaded image
         unknown_face_img = convert_and_save(b64_string, dirname, filename)
 
-        known_faces = Member.objects.values_list('avatar_encoding', flat=True)
-        known_face_names = Member.objects.values_list('slug', flat=True)
-        user_ids = Member.objects.values_list('user_id', flat=True)
         known_face_encoding = []
+        known_faces = []
+        known_face_names = []
+        user_ids = []
 
-        for known_face in known_faces:
-            known_face_encoding.append(np.array(json.loads(known_face)))
+        for member in members:
+            known_face_encoding.append(np.array(json.loads(member['avatar_encoding'])))
+            known_face_names.append(member['slug'])
+            user_ids.append(member['user_id'])
 
         result = detect_faces_in_image(unknown_face_img, known_face_encoding, known_face_names, user_ids)
 
